@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -117,4 +117,29 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.ball {
+  @apply w-12 h-12 rounded-full flex items-center justify-center font-semibold text-white shadow;
+  animation: appear 0.25s ease-in;
+}
+
+.ball-green {
+  @apply bg-green-600;
+}
+
+.ball-blue {
+  @apply bg-blue-600;
+}
+
+.clover {
+  font-size: 3rem;
+}
+
+.clover-big {
+  font-size: 4rem;
+}
+
+.clover-row {
+  @apply flex items-center justify-center gap-2;
 }
