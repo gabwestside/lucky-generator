@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
-import { getLatest, getLast, type MegaSenaResult } from './api/megaSena'
-import { useLocalStorage } from './hooks/useLocalStorage'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { NumberGenerator, type SavedGame } from './components/number-generator'
-import { CloverFullScreen, CloverSix } from './components/loading'
-import { ThemeToggle } from './components/theme-toggle'
-import { LatestResult } from './components/lastest-result'
-import { SavedGamesModal } from './components/saved-games-modal'
 import { Toaster, toast } from 'sonner'
+import { getLast, getLatest, type MegaSenaResult } from './api/megaSena'
+import { Generator } from './components/generator'
+import { Header } from './components/header'
+import { LastResults } from './components/last-results'
+import { LatestResult } from './components/latest-result'
+import { CloverFullScreen } from './components/loading'
+import { type SavedGame } from './components/number-generator'
+import { SavedGamesModal } from './components/saved-games-modal'
+import { useLocalStorage } from './hooks/useLocalStorage'
 
 const MAX_SAVED = 5
 
@@ -87,108 +86,47 @@ export function App() {
     })
   }
 
-  // function togglePlayed(g: SavedGame) {
-  //   setSavedGames(
-  //     savedGames.map((x) => (x.id === g.id ? { ...x, played: !x.played } : x))
-  //   )
+  function togglePlayed(g: SavedGame) {
+    setSavedGames(
+      savedGames.map((x) => (x.id === g.id ? { ...x, played: !x.played } : x))
+    )
 
-  //   toast('Status atualizado', {
-  //     description: g.played ? 'Marcado como NÃO jogado' : 'Marcado como jogado',
-  //     duration: 1500,
-  //   })
-  // }
+    toast('Status atualizado', {
+      description: g.played ? 'Marcado como NÃO jogado' : 'Marcado como jogado',
+      duration: 1500,
+    })
+  }
 
-  // function deleteGame(g: SavedGame) {
-  //   setSavedGames(savedGames.filter((x) => x.id !== g.id))
+  function deleteGame(g: SavedGame) {
+    setSavedGames(savedGames.filter((x) => x.id !== g.id))
 
-  //   toast.success('Jogo excluído', { duration: 1500 })
-  // }
+    toast.success('Jogo excluído', { duration: 1500 })
+  }
 
   if (loadingInit) return <CloverFullScreen />
 
   return (
     <div className='min-h-screen bg-background text-foreground p-4 md:p-6'>
       <div className='mx-auto max-w-3xl space-y-6'>
-        <div className='flex items-center justify-between'>
-          <h1 className='text-2xl font-bold'>Gerador da sorte 🍀</h1>
-          <div className='flex gap-2'>
-            <Button variant='outline' onClick={openLast5}>
-              Ver últimos 5 resultados
-            </Button>
-            <Button variant='outline' onClick={() => setModalOpen(true)}>
-              Jogos salvos
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+        <Header openLast5={openLast5} setModalOpen={setModalOpen} />
 
         {latest && <LatestResult data={latest} />}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Gerador</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <NumberGenerator canSave={canSave} onSave={saveGame} />
-            {!canSave && (
-              <>
-                <Separator className='my-3' />
-                <p className='text-sm text-muted-foreground'>
-                  Limite de {MAX_SAVED} jogos salvos atingido. Exclua algum para
-                  salvar novos.
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <Generator
+          canSave={canSave}
+          saveGame={saveGame}
+          gamesLimit={MAX_SAVED}
+        />
 
         <SavedGamesModal
           open={modalOpen}
           onOpenChange={setModalOpen}
-          games={[]} // este modal é só para jogos salvos, então criamos outro card inline p/ últimos 5
-          onTogglePlayed={() => {}}
-          onDelete={() => {}}
+          games={savedGames}
+          onTogglePlayed={togglePlayed}
+          onDelete={deleteGame}
         />
 
-        {modalOpen && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Últimos 5 Resultados</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loadingLast5 ? (
-                <CloverSix label='Buscando sorteios...' />
-              ) : (
-                <div className='space-y-4'>
-                  {last5.map((r) => (
-                    <div key={r.concurso} className='rounded-lg border p-3'>
-                      <div className='text-sm opacity-70'>
-                        Concurso {r.concurso} — {r.data}
-                      </div>
-                      <div className='mt-2 flex flex-wrap gap-2'>
-                        {(
-                          (Array.isArray(r.dezenas) ? r.dezenas : []) as (
-                            | number
-                            | string
-                          )[]
-                        )
-                          .map((x) =>
-                            typeof x === 'string' ? parseInt(x, 10) : x
-                          )
-                          .sort((a, b) => a - b)
-                          .map((n) => (
-                            <div key={n} className='ball ball-green'>
-                              {n}
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        {modalOpen && <LastResults loading={loadingLast5} draws={last5} />}
       </div>
 
       <Toaster />
