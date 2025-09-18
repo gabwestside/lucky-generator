@@ -1,23 +1,40 @@
+'use client'
+
 import type { MegaSenaResult } from '@/api/megaSena'
 import { CloverSix } from './loading'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 interface LastResultsProps {
   loading: boolean
   draws: MegaSenaResult[]
+  onClick: () => void
 }
 
-export function LastResults({ loading, draws }: LastResultsProps) {
+export function LastResults({ loading, draws, onClick }: LastResultsProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Últimos 5 Resultados</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant='outline' onClick={onClick}>
+          Ver últimos resultados
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className='max-w-lg max-h-[32rem]'>
+        <DialogHeader>
+          <DialogTitle>Últimos 5 Resultados</DialogTitle>
+        </DialogHeader>
+
         {loading ? (
           <CloverSix label='Buscando sorteios...' />
         ) : (
-          <div className='space-y-4'>
+          <div className='space-y-4 h-full max-h-[28rem] overflow-auto'>
             {draws.map((draw) => (
               <div key={draw.concurso} className='rounded-lg border p-3'>
                 <div className='text-sm opacity-70'>
@@ -42,7 +59,7 @@ export function LastResults({ loading, draws }: LastResultsProps) {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   )
 }

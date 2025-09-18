@@ -3,7 +3,6 @@ import { Toaster, toast } from 'sonner'
 import { getLast, getLatest, type MegaSenaResult } from './api/megaSena'
 import { Generator } from './components/generator'
 import { Header } from './components/header'
-import { LastResults } from './components/last-results'
 import { LatestResult } from './components/latest-result'
 import { CloverFullScreen } from './components/loading'
 import { type SavedGame } from './components/number-generator'
@@ -107,7 +106,12 @@ export function App() {
   return (
     <div className='min-h-screen bg-background text-foreground p-4 md:p-6'>
       <div className='mx-auto max-w-3xl space-y-6'>
-        <Header openLast5={openLast5} setModalOpen={setModalOpen} />
+        <Header
+          openLast5={openLast5}
+          setModalOpen={setModalOpen}
+          loading={loadingLast5}
+          draws={last5}
+        />
 
         {latest && <LatestResult data={latest} />}
 
@@ -124,10 +128,6 @@ export function App() {
           onTogglePlayed={togglePlayed}
           onDelete={deleteGame}
         />
-
-        {last5.length > 0 && (
-          <LastResults loading={loadingLast5} draws={last5} />
-        )}
       </div>
 
       <Toaster />
