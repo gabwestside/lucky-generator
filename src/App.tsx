@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 import { getLast, getLatest, type MegaSenaResult } from './api/megaSena'
 import { Generator } from './components/generator'
 import { Header } from './components/header'
@@ -129,8 +129,6 @@ export function App() {
           onDelete={deleteGame}
         />
       </div>
-
-      <Toaster />
     </div>
   )
 }

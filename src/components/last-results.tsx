@@ -1,7 +1,7 @@
 'use client'
 
 import type { MegaSenaResult } from '@/api/megaSena'
-import { CloverSix } from './loading'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import { History } from 'lucide-react'
+import { CloverSix } from './loading'
 
 interface LastResultsProps {
   loading: boolean
@@ -22,6 +23,7 @@ export function LastResults({ loading, draws, onClick }: LastResultsProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant='outline' onClick={onClick}>
+          <History />
           Ver últimos resultados
         </Button>
       </DialogTrigger>

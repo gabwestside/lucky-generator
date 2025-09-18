@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { CloudLightning, SaveIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { CloverSix } from './loading'
 
@@ -69,11 +70,17 @@ export function NumberGenerator({
             ))}
           </div>
           <div className='flex gap-2 justify-center'>
-            <Button onClick={generate} disabled={isGenerating}>
+            <Button
+              variant='outline'
+              onClick={generate}
+              disabled={isGenerating}
+            >
+              <CloudLightning />
               Gerar Números
             </Button>
             {revealed.length === 6 && canSave && (
               <Button variant='secondary' onClick={() => onSave(generated)}>
+                <SaveIcon />
                 Salvar jogo
               </Button>
             )}
