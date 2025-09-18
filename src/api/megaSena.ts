@@ -8,6 +8,7 @@ export type MegaSenaResult = {
   dezenas: number[] | string[]
   dataProximoConcurso?: string
   acumulou?: boolean
+  valorEstimadoProximoConcurso: number
 }
 
 export async function getLatest(): Promise<MegaSenaResult> {

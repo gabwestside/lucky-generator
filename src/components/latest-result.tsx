@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MegaSenaResult } from '@/api/megaSena'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatCurrency } from '@/lib/utils'
 
 function toNumbs(arr: (number | string)[]) {
   return arr.map((n) => (typeof n === 'string' ? parseInt(n, 10) : n))
@@ -31,8 +32,8 @@ export function LatestResult({ data }: { data: MegaSenaResult }) {
           <span
             className={
               data.acumulou
-                ? 'text-red-500 font-semibold'
-                : 'text-green-500 font-semibold'
+                ? 'text-green-500 font-semibold'
+                : 'text-red-500 font-semibold'
             }
           >
             {data.acumulou ? 'SIM' : 'NÃO'}
@@ -41,6 +42,12 @@ export function LatestResult({ data }: { data: MegaSenaResult }) {
         {data.dataProximoConcurso && (
           <p>
             <b>Próximo sorteio:</b> {data.dataProximoConcurso}
+          </p>
+        )}
+        {data.valorEstimadoProximoConcurso && (
+          <p>
+            <b>Valor do proximo sorteio: </b>
+            {formatCurrency(data.valorEstimadoProximoConcurso)}
           </p>
         )}
       </CardContent>

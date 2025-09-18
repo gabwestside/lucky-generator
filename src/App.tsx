@@ -38,7 +38,6 @@ export function App() {
   }, [])
 
   async function openLast5() {
-    setModalOpen(true)
     if (last5.length === 0) {
       setLoadingLast5(true)
       try {
@@ -126,7 +125,9 @@ export function App() {
           onDelete={deleteGame}
         />
 
-        {modalOpen && <LastResults loading={loadingLast5} draws={last5} />}
+        {last5.length > 0 && (
+          <LastResults loading={loadingLast5} draws={last5} />
+        )}
       </div>
 
       <Toaster />
