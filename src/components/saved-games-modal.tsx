@@ -39,7 +39,7 @@ export function SavedGamesModal({
                   className='flex items-center justify-between gap-2 rounded-lg border p-3'
                 >
                   <div>
-                    <div className='text-sm opacity-70'>
+                    <div className='text-xs opacity-70'>
                       {new Date(g.createdAt).toLocaleString()}
                     </div>
                     <div className='font-medium'>
@@ -49,7 +49,7 @@ export function SavedGamesModal({
                         .join(', ')}
                     </div>
                     <div
-                      className={`text-sm ${
+                      className={`text-xs ${
                         g.played ? 'text-green-500' : 'text-gray-500'
                       }`}
                     >
@@ -57,10 +57,10 @@ export function SavedGamesModal({
                     </div>
                   </div>
                   <div className='flex gap-2'>
-                    <Button variant='outline' onClick={() => onTogglePlayed(g)}>
-                      {g.played ? 'Desmarcar' : 'Marcar jogado'}
+                    <Button variant='outline' size='sm' onClick={() => onTogglePlayed(g)}>
+                      {g.played ? 'Desmarcar' : 'Marcar' }
                     </Button>
-                    <Button variant='destructive' onClick={() => onDelete(g)}>
+                    <Button variant='destructive' size='sm' onClick={() => onDelete(g)}>
                       Excluir
                     </Button>
                   </div>
