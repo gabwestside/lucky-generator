@@ -119,19 +119,6 @@
   }
 }
 
-.ball {
-  @apply w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white shadow;
-  animation: appear 0.25s ease-in;
-}
-
-.ball-green {
-  @apply bg-green-600;
-}
-
-.ball-blue {
-  @apply bg-blue-600;
-}
-
 .clover {
   font-size: 3rem;
 }
@@ -142,4 +129,20 @@
 
 .clover-row {
   @apply flex items-center justify-center gap-2;
+}
+
+.ball {
+  @apply w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white shadow;
+}
+
+.ball-green {
+  @apply bg-green-600;
+}
+
+.ball-blue {
+  @apply bg-blue-600;
+}
+
+.ball-ghost {
+  @apply bg-blue-400;
 }

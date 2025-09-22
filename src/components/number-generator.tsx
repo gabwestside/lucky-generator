@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { CloudLightning, SaveIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { CloverSix } from './loading'
 
 export type SavedGame = {
   id: string
@@ -9,6 +8,8 @@ export type SavedGame = {
   createdAt: string
   played: boolean
 }
+
+const BALL_COUNT = 6
 
 export function NumberGenerator({
   canSave,
@@ -18,29 +19,72 @@ export function NumberGenerator({
   onSave: (numbs: number[]) => void
 }) {
   const [isGenerating, setGenerating] = useState(false)
-  const [generated, setGenerated] = useState<number[]>([])
-  const [revealed, setRevealed] = useState<number[]>([])
-  const plimRef = useRef<HTMLAudioElement | null>(null)
 
+  const [finalNumbs, setFinalNumbs] = useState<number[]>([])
+  const [displayNumbs, setDisplayNumbs] = useState<number[]>(() =>
+    Array.from({ length: BALL_COUNT }, () => 0)
+  )
+
+  const [settled, setSettled] = useState<boolean[]>(() =>
+    Array.from({ length: BALL_COUNT }, () => false)
+  )
+
+  const plimRef = useRef<HTMLAudioElement | null>(null)
   useEffect(() => {
     plimRef.current = new Audio('/sounds/plim.mp3')
   }, [])
 
-  async function generate() {
-    setGenerating(true)
-    setRevealed([])
-
-    await new Promise((r) => setTimeout(r, 600))
-
+  function uniqueRandomSet(size: number, min = 1, max = 60) {
     const s = new Set<number>()
+    while (s.size < size)
+      s.add(Math.floor(Math.random() * (max - min + 1)) + min)
+    return [...s].sort((a, b) => a - b)
+  }
 
-    while (s.size < 6) s.add(Math.floor(Math.random() * 60) + 1)
+  async function generate() {
+    if (isGenerating) return
+    setGenerating(true)
 
-    const arr = [...s].sort((a, b) => a - b)
-    setGenerated(arr)
+    setSettled(Array.from({ length: BALL_COUNT }, () => false))
 
-    for (const n of arr) {
-      setRevealed((prev) => [...prev, n])
+    const finals = uniqueRandomSet(BALL_COUNT)
+    setFinalNumbs(finals)
+
+    setDisplayNumbs(
+      Array.from(
+        { length: BALL_COUNT },
+        () => Math.floor(Math.random() * 60) + 1
+      )
+    )
+
+    for (let i = 0; i < BALL_COUNT; i++) {
+      const swaps = 10 + Math.floor(Math.random() * 9)
+
+      for (let j = 0; j < swaps; j++) {
+        setDisplayNumbs((prev) => {
+          const next = [...prev]
+          let candidate = Math.floor(Math.random() * 60) + 1
+          if (candidate === next[i]) candidate = ((candidate + 7) % 60) + 1
+          next[i] = candidate
+          return next
+        })
+
+        const step = 28 + j * 10
+
+        await new Promise((r) => setTimeout(r, step))
+      }
+
+      setDisplayNumbs((prev) => {
+        const next = [...prev]
+        next[i] = finals[i]
+        return next
+      })
+      setSettled((prev) => {
+        const next = [...prev]
+        next[i] = true
+        return next
+      })
+
       try {
         if (plimRef.current) {
           plimRef.current.currentTime = 0
@@ -51,42 +95,52 @@ export function NumberGenerator({
         /* empty */
       }
 
-      await new Promise((r) => setTimeout(r, 350))
+      await new Promise((r) => setTimeout(r, 120))
     }
+
     setGenerating(false)
   }
 
+  const allSettled = settled.every(Boolean)
+
   return (
     <div className='space-y-4'>
-      {isGenerating ? (
-        <CloverSix label='Calculando sua sorte...' />
-      ) : (
-        <>
-          <div className='flex flex-wrap gap-2 justify-center'>
-            {revealed.map((n) => (
-              <div key={n} className='ball ball-blue'>
-                {n}
-              </div>
-            ))}
-          </div>
-          <div className='flex gap-2 justify-center'>
-            <Button
-              variant='outline'
-              onClick={generate}
-              disabled={isGenerating}
+      <div className='flex flex-wrap gap-2 justify-center'>
+        {displayNumbs.map((n, idx) => {
+          const isSet = settled[idx]
+
+          const animClass = isSet
+            ? 'animate-jackpot-pop'
+            : 'animate-jackpot-tick'
+          const colorClass = isSet ? 'ball-blue' : 'ball-ghost'
+
+          return (
+            <div
+              key={idx}
+              className={`ball ${colorClass} ${animClass}`}
+              style={{
+                animationDelay: isSet ? '0ms' : `${idx * 40}ms`,
+              }}
             >
-              <CloudLightning />
-              Gerar Números
-            </Button>
-            {revealed.length === 6 && canSave && (
-              <Button variant='secondary' onClick={() => onSave(generated)}>
-                <SaveIcon />
-                Salvar jogo
-              </Button>
-            )}
-          </div>
-        </>
-      )}
+              {n || '--'}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className='flex gap-2 justify-center'>
+        <Button variant='outline' onClick={generate} disabled={isGenerating}>
+          <CloudLightning className='mr-1' />
+          {isGenerating ? 'Gerando...' : 'Gerar Números'}
+        </Button>
+
+        {allSettled && canSave && (
+          <Button variant='secondary' onClick={() => onSave(finalNumbs)}>
+            <SaveIcon className='mr-1' />
+            Salvar jogo
+          </Button>
+        )}
+      </div>
     </div>
   )
 }
